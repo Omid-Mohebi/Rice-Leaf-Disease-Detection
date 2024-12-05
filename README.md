@@ -50,6 +50,10 @@ The implementation is structured in a Jupyter Notebook, which includes the follo
 
 - **Validation Accuracy**: Over 96% in the final epochs.
 - **Loss**: Reduced significantly over training.
+  
+![image](https://github.com/user-attachments/assets/8b41e37f-aea8-4904-9a5b-29ebb76ed0ab)
+
+![image](https://github.com/user-attachments/assets/ddbc8087-1296-4b42-b0d4-a406c3b23c72)
 
 ## Code Example
 
