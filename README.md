@@ -127,3 +127,4 @@ Feel free to contribute by opening issues or pull requests!
 
 This code structure can also be adapted for more complex image processing tasks in the healthcare field and other domains, enabling broader applications beyond rice leaf disease detection.
 
+**P.S**: I've also added the Python export of the Jupyter notebook it the repository.
