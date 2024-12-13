@@ -14,7 +14,7 @@ The dataset is sourced from Kaggle: [Rice Leaf Disease Image Dataset](https://ww
 
 ## Project Structure
 
-The implementation is structured in a Jupyter Notebook, which includes the following key steps:
+The implementation is structured in Jupyter Notebooks, with some variations in architecture. The key steps include:
 
 ### 1. Data Preparation
 
@@ -30,10 +30,33 @@ The implementation is structured in a Jupyter Notebook, which includes the follo
 
 ### 3. Model Training
 
-- **Architecture**:
+- **Architecture** (File without MaxPooling):
   - Convolutional layers with ReLU activation.
-  - MaxPooling for feature extraction.
+  - No MaxPooling layers.
   - Dense layers for classification.
+
+  ```python
+  x = Conv2D(32, (3, 3), strides=2, activation='relu')(i)
+  x = Conv2D(64, (3, 3), strides=2, activation='relu')(x)
+  x = Conv2D(128, (3, 3), strides=2, activation='relu')(x)
+  x = Flatten()(x)
+  ```
+  
+- **Architecture** (File with MaxPooling):
+  - Convolutional layers with ReLU activation.
+  - MaxPooling2D layers after each convolutional layer for feature reduction.
+  - Dense layers for classification.
+
+  ```python
+  x = Conv2D(32, (3, 3), strides=2, activation='relu')(i)
+  x = MaxPooling2D(pool_size=(2, 2), strides=None, padding="valid")(x)
+  x = Conv2D(64, (3, 3), strides=2, activation='relu')(x)
+  x = MaxPooling2D(pool_size=(2, 2), strides=None, padding="valid")(x)
+  x = Conv2D(128, (3, 3), strides=2, activation='relu')(x)
+  x = MaxPooling2D(pool_size=(2, 2), strides=None, padding="valid")(x)
+  x = Flatten()(x)
+  ```
+
 - **Compilation**:
   - Optimizer: Adam.
   - Loss Function: Sparse Categorical Crossentropy.
@@ -41,67 +64,38 @@ The implementation is structured in a Jupyter Notebook, which includes the follo
   - 15 epochs.
   - Training/Validation split: 67%/33%.
 
-### 4. Results
+### 4. Results and Training Comparison
 
-- Plotted training and validation loss and accuracy over epochs.
-- Achieved high accuracy on the validation set, indicating effective disease classification.
+#### File without MaxPooling
+- **Training Time per Epoch**: ~83-140 seconds
+- **Validation Accuracy (Final Epoch)**: 96.45%
+- **Loss (Final Epoch)**: 0.1480
 
-### 5. Key Metrics
+![image](https://github.com/user-attachments/assets/dfe0b437-40f7-433a-a3f9-e47cc707ddac)
 
-- **Validation Accuracy**: Over 96% in the final epochs.
-- **Loss**: Reduced significantly over training.
+![image](https://github.com/user-attachments/assets/3b6aa0f3-77f0-4f94-813c-b2cdc9098ebc)
   
-![image](https://github.com/user-attachments/assets/8b41e37f-aea8-4904-9a5b-29ebb76ed0ab)
+#### File with MaxPooling
+- **Training Time per Epoch**: ~20 seconds
+- **Validation Accuracy (Final Epoch)**: 96.03%
+- **Loss (Final Epoch)**: 0.1650
 
-![image](https://github.com/user-attachments/assets/ddbc8087-1296-4b42-b0d4-a406c3b23c72)
+![image](https://github.com/user-attachments/assets/e949fbc2-ce8f-43ec-8d7e-6290c82e5cd6)
 
-## Code Example
+![image](https://github.com/user-attachments/assets/8bfadc52-93db-4447-b7d4-06c6cdae9706)
 
-### Data Preprocessing
+### Observations
+1. **Training Efficiency**:
+   - The model without MaxPooling required up to **140 seconds** per epoch due to the absence of dimensionality reduction.
+   - The model with MaxPooling trained significantly faster, completing each epoch in about **20 seconds**.
 
-```python
-images = []
-labels = []
+2. **Performance**:
+   - The non-MaxPooling model also had a marginally lower final loss.
+   - Both models achieved comparable validation accuracies, with the non-MaxPooling model slightly outperforming at **96.45% vs 96.03%**.
 
-for class_name in class_names:
-    class_folder = os.path.join(path, class_name)
-
-    for filename in os.listdir(class_folder):
-        if filename.endswith('.jpg') or filename.endswith('.png'):
-            img_path = os.path.join(class_folder, filename)
-
-            img = Image.open(img_path)
-            img = img.convert('RGB')
-            img = img.resize((128, 128))
-            img_array = np.array(img)
-
-            images.append(img_array)
-            labels.append(class_name)
-
-images_array = np.array(images)
-labels_array = np.array(labels)
-```
-
-### Model Definition
-
-```python
-from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, Dropout, MaxPooling2D
-from tensorflow.keras.models import Model
-
-K = len(set(y_train))
-
-i = Input(shape=X_train[0].shape)
-x = Conv2D(32, (3, 3), strides=2, activation='relu')(i)
-x = Conv2D(64, (3, 3), strides=2, activation='relu')(x)
-x = Conv2D(128, (3, 3), strides=2, activation='relu')(x)
-x = Flatten()(x)
-x = Dropout(0.5)(x)
-x = Dense(1024, activation='relu')(x)
-x = Dropout(0.2)(x)
-x = Dense(K, activation='softmax')(x)
-
-model = Model(i, x)
-```
+3. **Trade-Off**:
+   - The absence of MaxPooling leads to finer feature extraction but at a higher computational cost.
+   - The MaxPooling model is more efficient, trading a minor decrease in performance for significant gains in training speed.
 
 ## Installation
 
@@ -131,4 +125,5 @@ Feel free to contribute by opening issues or pull requests!
 
 This code structure can also be adapted for more complex image processing tasks in the healthcare field and other domains, enabling broader applications beyond rice leaf disease detection.
 
-**P.S**: I've also added the Python export of the Jupyter notebook it the repository.
+**P.S**: The repository contains the Python export of the Jupyter notebooks for easy reproducibility.
+
