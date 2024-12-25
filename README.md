@@ -107,7 +107,7 @@ To run this project locally:
    ```
 2. Install dependencies:
    ```bash
-   pip install -r requirements
+   pip install -r requirements.txt
    ```
 3. Run the Jupyter Notebook:
    ```bash
